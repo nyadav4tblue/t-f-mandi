@@ -9,7 +9,7 @@
 export type DataProvider = 'mock' | 'api'
 
 export const DATA_PROVIDER: DataProvider =
-  (import.meta.env.VITE_DATA_PROVIDER as DataProvider) || 'mock'
+  (import.meta.env.VITE_DATA_PROVIDER as DataProvider) || 'api'
 
 export const API_BASE_URL: string =
   (import.meta.env.VITE_API_BASE_URL as string) || 'http://localhost:4000/api'

@@ -1,56 +1,68 @@
 import { API_BASE_URL } from '../../config'
 
-/** Thin fetch wrapper used by the API repositories. */
-export async function http<T>(
+interface PaginationMeta {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
+
+interface Envelope<T> {
+  success: boolean
+  data: T
+  meta?: PaginationMeta
+  error?: { code?: string; message?: string }
+}
+
+async function request<T>(
   path: string,
   options: RequestInit = {},
-): Promise<T> {
+): Promise<Envelope<T>> {
   const res = await fetch(`${API_BASE_URL}${path}`, {
     headers: { 'Content-Type': 'application/json', ...options.headers },
     ...options,
   })
-  if (!res.ok) {
-    throw new Error(`API ${options.method ?? 'GET'} ${path} failed: ${res.status}`)
+
+  if (res.status === 204) {
+    return { success: true, data: undefined as T }
   }
-  if (res.status === 204) return undefined as T
-  return (await res.json()) as T
+
+  let json: Envelope<T> | undefined
+  try {
+    json = (await res.json()) as Envelope<T>
+  } catch {
+    json = undefined
+  }
+
+  if (!res.ok || json?.success === false) {
+    const message =
+      json?.error?.message ?? `${options.method ?? 'GET'} ${path} failed (${res.status})`
+    throw new Error(message)
+  }
+
+  return (json ?? { success: true, data: undefined as T }) as Envelope<T>
+}
+
+/** Returns the unwrapped `data` payload of a single-resource response. */
+export async function http<T>(
+  path: string,
+  options: RequestInit = {},
+): Promise<T> {
+  return (await request<T>(path, options)).data
 }
 
 /**
- * Generic REST CRUD repository. Each concrete API repository simply points this
- * at its resource path (e.g. "/farmers"). When the backend is ready these are
- * wired in by flipping DATA_PROVIDER to "api" — no page code changes.
+ * Fetches every page of a paginated list endpoint (the API caps `limit` at
+ * 100) and returns the concatenated rows.
  */
-export class HttpCrudRepository<T, TNew> {
-  protected readonly resource: string
-
-  constructor(resource: string) {
-    this.resource = resource
+export async function httpAll<T>(path: string): Promise<T[]> {
+  const sep = path.includes('?') ? '&' : '?'
+  const first = await request<T[]>(`${path}${sep}page=1&limit=100`)
+  let rows = first.data ?? []
+  const totalPages = first.meta?.totalPages ?? 1
+  for (let page = 2; page <= totalPages; page += 1) {
+    const next = await request<T[]>(`${path}${sep}page=${page}&limit=100`)
+    rows = rows.concat(next.data ?? [])
   }
-
-  getAll(): Promise<T[]> {
-    return http<T[]>(this.resource)
-  }
-
-  getById(id: string): Promise<T | null> {
-    return http<T | null>(`${this.resource}/${id}`)
-  }
-
-  create(input: TNew): Promise<T> {
-    return http<T>(this.resource, {
-      method: 'POST',
-      body: JSON.stringify(input),
-    })
-  }
-
-  update(id: string, input: Partial<TNew>): Promise<T> {
-    return http<T>(`${this.resource}/${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(input),
-    })
-  }
-
-  delete(id: string): Promise<void> {
-    return http<void>(`${this.resource}/${id}`, { method: 'DELETE' })
-  }
+  return rows
 }

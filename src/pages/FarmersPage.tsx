@@ -31,7 +31,7 @@ export function FarmersPage() {
       />
 
       <div className="mb-4">
-        <SearchBar value={term} onChange={setTerm} placeholder="Search name, mobile, village…" />
+        <SearchBar value={term} onChange={setTerm} placeholder="Search name, mobile, address…" />
       </div>
 
       {loading ? (

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { Modal } from '../components/Modal'
 import { PageHeader } from '../components/PageHeader'
 import { Spinner } from '../components/Spinner'
 import { StatusBadge } from '../components/StatusBadge'
@@ -10,9 +11,12 @@ import type { Farmer } from '../types'
 export function FarmerViewPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { commodityName } = useMasters()
+  const { commodityName, reloadFarmers } = useMasters()
   const [farmer, setFarmer] = useState<Farmer | null>(null)
   const [loading, setLoading] = useState(true)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!id) return
@@ -21,6 +25,25 @@ export function FarmerViewPage() {
       setLoading(false)
     })
   }, [id])
+
+  const handleDelete = async () => {
+    if (!farmer) return
+    setDeleting(true)
+    setDeleteError(null)
+    try {
+      await FarmerService.delete(farmer.id)
+      await reloadFarmers()
+      navigate('/farmers')
+    } catch (err) {
+      setDeleteError(
+        err instanceof Error
+          ? err.message
+          : 'Could not delete this farmer. They may have existing sales.',
+      )
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   if (loading) return <Spinner />
   if (!farmer)
@@ -51,7 +74,7 @@ export function FarmerViewPage() {
         <Row label="Status" value={<StatusBadge status={farmer.status} />} />
         <Row label="Father Name" value={farmer.fatherName || '—'} />
         <Row label="Mobile" value={farmer.mobile || '—'} />
-        <Row label="Village" value={farmer.village || '—'} />
+        <Row label="Address" value={farmer.village || '—'} />
         <div>
           <p className="text-sm text-gray-500">Commodities Dealt In</p>
           <div className="mt-1 flex flex-wrap gap-2">
@@ -75,6 +98,53 @@ export function FarmerViewPage() {
       >
         + New Sale for {farmer.name}
       </button>
+
+      <button
+        type="button"
+        className="btn-danger mt-3 w-full"
+        onClick={() => {
+          setDeleteError(null)
+          setConfirmOpen(true)
+        }}
+      >
+        Delete Farmer
+      </button>
+
+      <Modal
+        open={confirmOpen}
+        title="Delete Farmer"
+        onClose={() => (deleting ? undefined : setConfirmOpen(false))}
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">
+            Delete <span className="font-semibold">{farmer.name}</span>? This
+            cannot be undone.
+          </p>
+          {deleteError && (
+            <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600">
+              {deleteError}
+            </p>
+          )}
+          <div className="flex gap-3">
+            <button
+              type="button"
+              className="btn-secondary flex-1"
+              disabled={deleting}
+              onClick={() => setConfirmOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="btn-danger flex-1"
+              disabled={deleting}
+              onClick={handleDelete}
+            >
+              {deleting ? 'Deleting…' : 'Delete'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

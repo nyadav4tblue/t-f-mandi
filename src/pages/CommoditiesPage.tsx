@@ -98,6 +98,9 @@ function CommodityFormModal({ open, commodity, onClose, onSaved }: FormModalProp
   const [status, setStatus] = useState<Status>('active')
   const [saving, setSaving] = useState(false)
   const [seeded, setSeeded] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   // Sync local state when the modal opens for a specific record.
   const key = open ? (commodity?.id ?? 'new') : null
@@ -105,11 +108,14 @@ function CommodityFormModal({ open, commodity, onClose, onSaved }: FormModalProp
     setSeeded(key)
     setName(commodity?.name ?? '')
     setStatus(commodity?.status ?? 'active')
+    setConfirmDelete(false)
+    setError(null)
   }
 
   const handleSave = async () => {
     if (!name.trim()) return
     setSaving(true)
+    setError(null)
     try {
       if (commodity) {
         await CommodityService.update(commodity.id, { name: name.trim(), status })
@@ -121,8 +127,29 @@ function CommodityFormModal({ open, commodity, onClose, onSaved }: FormModalProp
       }
       await onSaved()
       onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not save commodity.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!commodity) return
+    setDeleting(true)
+    setError(null)
+    try {
+      await CommodityService.delete(commodity.id)
+      await onSaved()
+      onClose()
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Could not delete. This commodity may have grades or sales.',
+      )
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -154,14 +181,53 @@ function CommodityFormModal({ open, commodity, onClose, onSaved }: FormModalProp
             <option value="inactive">Inactive</option>
           </select>
         </div>
+        {error && (
+          <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600">
+            {error}
+          </p>
+        )}
         <button
           type="button"
           className="btn-primary w-full"
-          disabled={saving || !name.trim()}
+          disabled={saving || deleting || !name.trim()}
           onClick={handleSave}
         >
           {saving ? 'Saving…' : 'Save'}
         </button>
+
+        {commodity &&
+          (confirmDelete ? (
+            <div className="flex gap-3">
+              <button
+                type="button"
+                className="btn-secondary flex-1"
+                disabled={deleting}
+                onClick={() => setConfirmDelete(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-danger flex-1"
+                disabled={deleting}
+                onClick={handleDelete}
+              >
+                {deleting ? 'Deleting…' : 'Confirm Delete'}
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="btn-danger w-full"
+              disabled={saving}
+              onClick={() => {
+                setError(null)
+                setConfirmDelete(true)
+              }}
+            >
+              Delete Commodity
+            </button>
+          ))}
       </div>
     </Modal>
   )

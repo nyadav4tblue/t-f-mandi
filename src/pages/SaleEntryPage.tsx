@@ -9,6 +9,8 @@ import { SaleService, type SaleFormInput } from '../services/SaleService'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
+const UNITS = ['KG', 'QUINTAL', 'BAG', 'CRATE', 'PIECE'] as const
+
 export function SaleEntryPage() {
   const navigate = useNavigate()
   const [params] = useSearchParams()
@@ -21,7 +23,7 @@ export function SaleEntryPage() {
   const [traderName, setTraderName] = useState('')
   const [traderMobile, setTraderMobile] = useState('')
   const [quantity, setQuantity] = useState('')
-  const [unit, setUnit] = useState('')
+  const [unit, setUnit] = useState<string>('KG')
   const [weight, setWeight] = useState('')
   const [rate, setRate] = useState('')
   const [commissionPercent, setCommissionPercent] = useState('6')
@@ -43,7 +45,10 @@ export function SaleEntryPage() {
     farmerId !== '' &&
     commodityId !== '' &&
     traderName.trim() !== '' &&
-    Number(rate) > 0
+    Number(quantity) > 0 &&
+    Number(weight) > 0 &&
+    Number(rate) > 0 &&
+    Number(commissionPercent) >= 0
 
   const resetForm = () => {
     setFarmerId('')
@@ -52,7 +57,7 @@ export function SaleEntryPage() {
     setTraderName('')
     setTraderMobile('')
     setQuantity('')
-    setUnit('')
+    setUnit('KG')
     setWeight('')
     setRate('')
     setCommissionPercent('6')
@@ -182,7 +187,7 @@ export function SaleEntryPage() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="label">Quantity (optional)</label>
+            <label className="label">Quantity</label>
             <input
               className="input"
               type="number"
@@ -193,13 +198,18 @@ export function SaleEntryPage() {
             />
           </div>
           <div>
-            <label className="label">Unit (optional)</label>
-            <input
+            <label className="label">Unit</label>
+            <select
               className="input"
               value={unit}
-              placeholder="bags / crates"
               onChange={(e) => setUnit(e.target.value)}
-            />
+            >
+              {UNITS.map((u) => (
+                <option key={u} value={u}>
+                  {u}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

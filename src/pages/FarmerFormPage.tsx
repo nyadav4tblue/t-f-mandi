@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { Modal } from '../components/Modal'
 import { PageHeader } from '../components/PageHeader'
 import { Spinner } from '../components/Spinner'
 import { useMasters } from '../hooks/useMasters'
@@ -19,11 +20,14 @@ export function FarmerFormPage() {
   const { id } = useParams()
   const isEdit = Boolean(id)
   const navigate = useNavigate()
-  const { commodities, reloadFarmers } = useMasters()
+  const { commodities, reloadFarmers, addCommodity } = useMasters()
 
   const [form, setForm] = useState<NewFarmer>(EMPTY)
   const [loading, setLoading] = useState(isEdit)
   const [saving, setSaving] = useState(false)
+  const [addOpen, setAddOpen] = useState(false)
+  const [newCommodity, setNewCommodity] = useState('')
+  const [addingCommodity, setAddingCommodity] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -48,6 +52,22 @@ export function FarmerFormPage() {
         ? prev.commodityIds.filter((c) => c !== commodityId)
         : [...prev.commodityIds, commodityId],
     }))
+
+  const handleAddCommodity = async () => {
+    if (!newCommodity.trim()) return
+    setAddingCommodity(true)
+    try {
+      const created = await addCommodity(newCommodity)
+      setForm((prev) => ({
+        ...prev,
+        commodityIds: [...prev.commodityIds, created.id],
+      }))
+      setNewCommodity('')
+      setAddOpen(false)
+    } finally {
+      setAddingCommodity(false)
+    }
+  }
 
   const handleSave = async () => {
     if (!form.name.trim()) return
@@ -102,11 +122,11 @@ export function FarmerFormPage() {
           />
         </div>
         <div>
-          <label className="label">Village</label>
+          <label className="label">Address</label>
           <input
             className="input"
             value={form.village}
-            placeholder="Village"
+            placeholder="Address"
             onChange={(e) => set('village', e.target.value)}
           />
         </div>
@@ -134,6 +154,13 @@ export function FarmerFormPage() {
                   </button>
                 )
               })}
+            <button
+              type="button"
+              onClick={() => setAddOpen(true)}
+              className="rounded-full border border-dashed border-brand-500 px-4 py-2 text-sm font-medium text-brand-700"
+            >
+              + Add New
+            </button>
           </div>
         </div>
 
@@ -158,6 +185,34 @@ export function FarmerFormPage() {
           {saving ? 'Saving…' : 'Save Farmer'}
         </button>
       </div>
+
+      <Modal
+        open={addOpen}
+        title="Add New Commodity"
+        onClose={() => setAddOpen(false)}
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="label">Commodity Name</label>
+            <input
+              autoFocus
+              className="input"
+              value={newCommodity}
+              placeholder="e.g. Cabbage"
+              onChange={(e) => setNewCommodity(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddCommodity()}
+            />
+          </div>
+          <button
+            type="button"
+            className="btn-primary w-full"
+            disabled={addingCommodity || !newCommodity.trim()}
+            onClick={handleAddCommodity}
+          >
+            {addingCommodity ? 'Saving…' : 'Save & Select'}
+          </button>
+        </div>
+      </Modal>
     </div>
   )
 }

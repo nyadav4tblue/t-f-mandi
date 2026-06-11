@@ -56,15 +56,21 @@ src/
 `src/config.ts` holds the single switch:
 
 ```ts
-export const DATA_PROVIDER = 'mock' // 'mock' today, 'api' later
+export const DATA_PROVIDER = 'api' // 'api' (live backend) or 'mock' (local JSON)
 ```
 
-You can also set it via env vars without touching code:
+The app now talks to the **Mandi Backend API** by default (`http://localhost:4000/api`).
+Override either value via env vars without touching code:
 
 ```
-VITE_DATA_PROVIDER=api
-VITE_API_BASE_URL=https://your-backend/api
+VITE_DATA_PROVIDER=mock                      # use bundled JSON instead
+VITE_API_BASE_URL=https://your-backend/api   # point at another server
 ```
+
+The `Api*` repositories map between the backend DTOs and the app's domain
+types, so pages, services and components stay unaware of the backend's shape
+(uppercase statuses, `{ success, data, meta }` envelope, paginated lists,
+`gradeName`/`commissionPercentage` naming, etc.).
 
 `RepositoryFactory` reads this value and returns either the `Mock*` or `Api*`
 repository. Pages and services are unaware of which one is in use.
