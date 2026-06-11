@@ -1,0 +1,10 @@
+[
+  { "id": "grd-1", "commodityId": "com-1", "name": "A Grade", "status": "active", "createdAt": "2026-06-01T06:00:00.000Z" },
+  { "id": "grd-2", "commodityId": "com-1", "name": "B Grade", "status": "active", "createdAt": "2026-06-01T06:00:00.000Z" },
+  { "id": "grd-3", "commodityId": "com-1", "name": "C Grade", "status": "active", "createdAt": "2026-06-01T06:00:00.000Z" },
+  { "id": "grd-4", "commodityId": "com-2", "name": "Super", "status": "active", "createdAt": "2026-06-01T06:00:00.000Z" },
+  { "id": "grd-5", "commodityId": "com-2", "name": "Medium", "status": "active", "createdAt": "2026-06-01T06:00:00.000Z" },
+  { "id": "grd-6", "commodityId": "com-2", "name": "Small", "status": "active", "createdAt": "2026-06-01T06:00:00.000Z" },
+  { "id": "grd-7", "commodityId": "com-3", "name": "A Grade", "status": "active", "createdAt": "2026-06-01T06:00:00.000Z" },
+  { "id": "grd-8", "commodityId": "com-3", "name": "B Grade", "status": "active", "createdAt": "2026-06-01T06:00:00.000Z" }
+]

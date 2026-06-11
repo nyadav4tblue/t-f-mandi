@@ -1,0 +1,4 @@
+[
+  { "id": "trd-1", "name": "Raj Traders", "mobile": "9000000001", "createdAt": "2026-06-02T06:00:00.000Z" },
+  { "id": "trd-2", "name": "Mahalaxmi Vegetables", "mobile": "9000000002", "createdAt": "2026-06-03T06:00:00.000Z" }
+]

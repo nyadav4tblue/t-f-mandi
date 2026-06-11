@@ -1,0 +1,7 @@
+[
+  { "id": "com-1", "name": "Potato", "status": "active", "createdAt": "2026-06-01T06:00:00.000Z" },
+  { "id": "com-2", "name": "Onion", "status": "active", "createdAt": "2026-06-01T06:00:00.000Z" },
+  { "id": "com-3", "name": "Tomato", "status": "active", "createdAt": "2026-06-01T06:00:00.000Z" },
+  { "id": "com-4", "name": "Garlic", "status": "active", "createdAt": "2026-06-01T06:00:00.000Z" },
+  { "id": "com-5", "name": "Peas", "status": "active", "createdAt": "2026-06-01T06:00:00.000Z" }
+]

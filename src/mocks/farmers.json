@@ -1,0 +1,32 @@
+[
+  {
+    "id": "frm-1",
+    "name": "Ramesh Kumar",
+    "fatherName": "Suresh Kumar",
+    "mobile": "9876543210",
+    "village": "Rampur",
+    "status": "active",
+    "commodityIds": ["com-1", "com-2"],
+    "createdAt": "2026-06-02T06:00:00.000Z"
+  },
+  {
+    "id": "frm-2",
+    "name": "Sita Devi",
+    "fatherName": "Mohan Lal",
+    "mobile": "9123456780",
+    "village": "Govindpur",
+    "status": "active",
+    "commodityIds": ["com-3"],
+    "createdAt": "2026-06-03T06:00:00.000Z"
+  },
+  {
+    "id": "frm-3",
+    "name": "Hari Singh",
+    "fatherName": "Bhola Singh",
+    "mobile": "9988776655",
+    "village": "Rampur",
+    "status": "inactive",
+    "commodityIds": ["com-1", "com-4", "com-5"],
+    "createdAt": "2026-06-04T06:00:00.000Z"
+  }
+]
