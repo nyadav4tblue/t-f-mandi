@@ -9,6 +9,8 @@ import { GradesPage } from './pages/GradesPage'
 import { HomePage } from './pages/HomePage'
 import { ReportsPage } from './pages/ReportsPage'
 import { SaleEntryPage } from './pages/SaleEntryPage'
+import { StockInDetailPage } from './pages/StockInDetailPage'
+import { StockInPage } from './pages/StockInPage'
 
 export default function App() {
   return (
@@ -23,6 +25,8 @@ export default function App() {
           <Route path="commodities" element={<CommoditiesPage />} />
           <Route path="grades" element={<GradesPage />} />
           <Route path="sales/new" element={<SaleEntryPage />} />
+          <Route path="stock-in" element={<StockInPage />} />
+          <Route path="stock-in/:id" element={<StockInDetailPage />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="*" element={<HomePage />} />
         </Route>

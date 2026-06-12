@@ -4,7 +4,10 @@ import type {
   Grade,
   Sale,
   Status,
+  StockInFarmer,
+  StockItem,
   Trader,
+  TruckGroup,
 } from '../../types'
 
 /** Backend uses uppercase status strings; the app uses lowercase. */
@@ -132,6 +135,102 @@ export function mapSale(a: ApiSale): Sale {
     grossAmount: a.grossAmount,
     commissionAmount: a.commissionAmount,
     netAmount: a.netAmount,
+    createdAt: a.createdAt,
+  }
+}
+
+export interface ApiStockItem {
+  id: string
+  commodityId: string
+  commodityName?: string
+  gradeId: string | null
+  gradeName: string | null
+  variety: string | null
+  quantity: number
+  unit: string
+  weight: number | null
+  expectedWeight: number | null
+  packageCount: number | null
+  remarks: string | null
+}
+
+export interface ApiStockInFarmer {
+  id: string
+  farmerId: string
+  farmerCode?: string
+  farmerName: string
+  village: string | null
+  mobile: string | null
+  remarks: string | null
+  stockLineCount: number
+  items: ApiStockItem[]
+}
+
+export interface ApiTruckGroup {
+  id: string
+  groupNumber: string
+  groupName: string
+  truckNumber: string | null
+  driverName: string | null
+  driverMobile: string | null
+  arrivalDate: string
+  sourceLocation: string | null
+  remarks: string | null
+  status: string
+  totalFarmers: number
+  totalStockLines: number
+  totalQuantityEntries: number
+  farmers: ApiStockInFarmer[]
+  createdAt: string
+}
+
+function mapStockItem(a: ApiStockItem): StockItem {
+  return {
+    id: a.id,
+    commodityId: a.commodityId,
+    commodityName: a.commodityName ?? undefined,
+    gradeId: a.gradeId ?? undefined,
+    gradeName: a.gradeName ?? undefined,
+    variety: a.variety ?? undefined,
+    quantity: a.quantity,
+    unit: a.unit,
+    weight: a.weight ?? undefined,
+    expectedWeight: a.expectedWeight ?? undefined,
+    packageCount: a.packageCount ?? undefined,
+    remarks: a.remarks ?? undefined,
+  }
+}
+
+function mapStockInFarmer(a: ApiStockInFarmer): StockInFarmer {
+  return {
+    id: a.id,
+    farmerId: a.farmerId,
+    farmerCode: a.farmerCode ?? undefined,
+    farmerName: a.farmerName,
+    village: a.village ?? undefined,
+    mobile: a.mobile ?? undefined,
+    remarks: a.remarks ?? undefined,
+    stockLineCount: a.stockLineCount,
+    items: (a.items ?? []).map(mapStockItem),
+  }
+}
+
+export function mapTruckGroup(a: ApiTruckGroup): TruckGroup {
+  return {
+    id: a.id,
+    groupNumber: a.groupNumber,
+    groupName: a.groupName,
+    truckNumber: a.truckNumber ?? undefined,
+    driverName: a.driverName ?? undefined,
+    driverMobile: a.driverMobile ?? undefined,
+    arrivalDate: (a.arrivalDate ?? '').slice(0, 10),
+    sourceLocation: a.sourceLocation ?? undefined,
+    remarks: a.remarks ?? undefined,
+    status: toStatus(a.status),
+    totalFarmers: a.totalFarmers,
+    totalStockLines: a.totalStockLines,
+    totalQuantityEntries: a.totalQuantityEntries,
+    farmers: (a.farmers ?? []).map(mapStockInFarmer),
     createdAt: a.createdAt,
   }
 }

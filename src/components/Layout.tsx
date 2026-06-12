@@ -9,6 +9,7 @@ interface NavItem {
 const NAV: NavItem[] = [
   { to: '/', label: 'Home', icon: '🏠' },
   { to: '/sales/new', label: 'Sale', icon: '➕' },
+  { to: '/stock-in', label: 'Stock', icon: '📥' },
   { to: '/farmers', label: 'Farmers', icon: '👨‍🌾' },
   { to: '/commodities', label: 'Items', icon: '🥔' },
   { to: '/reports', label: 'Reports', icon: '📄' },

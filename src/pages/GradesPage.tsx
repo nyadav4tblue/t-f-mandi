@@ -111,6 +111,9 @@ function GradeFormModal({ open, grade, onClose, onSaved }: FormModalProps) {
   const [status, setStatus] = useState<Status>('active')
   const [saving, setSaving] = useState(false)
   const [seeded, setSeeded] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const key = open ? (grade?.id ?? 'new') : null
   if (key !== seeded) {
@@ -118,11 +121,14 @@ function GradeFormModal({ open, grade, onClose, onSaved }: FormModalProps) {
     setCommodityId(grade?.commodityId ?? '')
     setName(grade?.name ?? '')
     setStatus(grade?.status ?? 'active')
+    setConfirmDelete(false)
+    setError(null)
   }
 
   const handleSave = async () => {
     if (!name.trim() || !commodityId) return
     setSaving(true)
+    setError(null)
     try {
       if (grade) {
         await GradeService.update(grade.id, { commodityId, name: name.trim(), status })
@@ -134,8 +140,29 @@ function GradeFormModal({ open, grade, onClose, onSaved }: FormModalProps) {
       }
       await onSaved()
       onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not save grade.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!grade) return
+    setDeleting(true)
+    setError(null)
+    try {
+      await GradeService.delete(grade.id)
+      await onSaved()
+      onClose()
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Could not delete. This grade may be used by sales or stock-in.',
+      )
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -179,14 +206,53 @@ function GradeFormModal({ open, grade, onClose, onSaved }: FormModalProps) {
             <option value="inactive">Inactive</option>
           </select>
         </div>
+        {error && (
+          <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-600">
+            {error}
+          </p>
+        )}
         <button
           type="button"
           className="btn-primary w-full"
-          disabled={saving || !name.trim() || !commodityId}
+          disabled={saving || deleting || !name.trim() || !commodityId}
           onClick={handleSave}
         >
           {saving ? 'Saving…' : 'Save'}
         </button>
+
+        {grade &&
+          (confirmDelete ? (
+            <div className="flex gap-3">
+              <button
+                type="button"
+                className="btn-secondary flex-1"
+                disabled={deleting}
+                onClick={() => setConfirmDelete(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-danger flex-1"
+                disabled={deleting}
+                onClick={handleDelete}
+              >
+                {deleting ? 'Deleting…' : 'Confirm Delete'}
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="btn-danger w-full"
+              disabled={saving}
+              onClick={() => {
+                setError(null)
+                setConfirmDelete(true)
+              }}
+            >
+              Delete Grade
+            </button>
+          ))}
       </div>
     </Modal>
   )

@@ -10,8 +10,10 @@ interface Action {
 const ACTIONS: Action[] = [
   { to: '/sales/new', title: 'New Sale', icon: '➕', primary: true },
   { to: '/farmers/new', title: 'New Farmer', icon: '👨‍🌾', primary: true },
+  { to: '/stock-in', title: 'Stock-In', icon: '📥', primary: true },
   { to: '/farmers', title: 'Farmers', icon: '📇' },
   { to: '/commodities', title: 'Commodities', icon: '🥔' },
+  { to: '/grades', title: 'Grades', icon: '🏷️' },
   { to: '/reports', title: 'Reports', icon: '📄' },
 ]
 

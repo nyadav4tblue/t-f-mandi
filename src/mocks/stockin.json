@@ -1,0 +1,44 @@
+[
+  {
+    "id": "grp-1",
+    "groupNumber": "STK-000001",
+    "groupName": "Morning Truck",
+    "truckNumber": "HR55-AB-1234",
+    "driverName": "Ramlal",
+    "driverMobile": "9811112222",
+    "arrivalDate": "2026-06-11",
+    "sourceLocation": "Sonipat",
+    "remarks": "",
+    "status": "active",
+    "totalFarmers": 1,
+    "totalStockLines": 1,
+    "totalQuantityEntries": 1,
+    "farmers": [
+      {
+        "id": "sif-1",
+        "farmerId": "frm-1",
+        "farmerCode": "F-0001",
+        "farmerName": "Ramesh Kumar",
+        "village": "Rampur",
+        "mobile": "9876543210",
+        "remarks": "",
+        "stockLineCount": 1,
+        "items": [
+          {
+            "id": "sit-1",
+            "commodityId": "com-1",
+            "gradeId": "grd-1",
+            "variety": "Local",
+            "quantity": 60,
+            "unit": "BAG",
+            "weight": 3000,
+            "expectedWeight": 3000,
+            "packageCount": 60,
+            "remarks": ""
+          }
+        ]
+      }
+    ],
+    "createdAt": "2026-06-11T05:30:00.000Z"
+  }
+]

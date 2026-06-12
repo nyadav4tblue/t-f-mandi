@@ -6,9 +6,13 @@ import type {
   NewFarmer,
   NewGrade,
   NewSale,
+  NewStockInFarmer,
+  NewStockItem,
   NewTrader,
+  NewTruckGroup,
   Sale,
   Trader,
+  TruckGroup,
 } from '../types'
 
 /** Generic CRUD contract shared by every repository. */
@@ -34,3 +38,20 @@ export interface TraderRepository extends CrudRepository<Trader, NewTrader> {
 }
 
 export type SaleRepository = CrudRepository<Sale, NewSale>
+
+/**
+ * Stock-In is modelled as truck groups. Each group holds farmer entries, and
+ * each farmer entry holds stock items. Mutations to the nested resources return
+ * the full, updated truck group.
+ */
+export interface StockInRepository {
+  getAll(): Promise<TruckGroup[]>
+  getById(id: string): Promise<TruckGroup | null>
+  create(input: NewTruckGroup): Promise<TruckGroup>
+  update(id: string, input: Partial<NewTruckGroup>): Promise<TruckGroup>
+  delete(id: string): Promise<void>
+  addFarmer(groupId: string, input: NewStockInFarmer): Promise<TruckGroup>
+  removeFarmer(farmerEntryId: string): Promise<void>
+  addItem(farmerEntryId: string, input: NewStockItem): Promise<TruckGroup>
+  removeItem(itemId: string): Promise<void>
+}
